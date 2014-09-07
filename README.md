@@ -1,6 +1,6 @@
-# grunt-require-cache
+# grunt-hash-required
 
-> Change requirejs paths to cache-busted paths.
+> Add a unique hash to a file, and update requirejs paths to cache-busted paths.
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -8,46 +8,65 @@ This plugin requires Grunt `~0.4.5`
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-require-cache --save-dev
+npm install grunt-hash-required --save-dev
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-require-cache');
+grunt.loadNpmTasks('grunt-hash-required');
 ```
 
 ## The "require_cache" task
 
 ### Overview
-In your project's Gruntfile, add a section named `require_cache` to the data object passed into `grunt.initConfig()`.
+In your project's Gruntfile, add a section named `hash_require` to the data object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-  require_cache: {
-    options: {
-      // Task-specific options go here.
+    'hash_require': {
+            options: {
+                mapping: 'assets/assets.json',
+                srcBasePath: '',
+                destBasePath: '',
+                flatten: true,
+                prepend: true,
+                clean: true
+            },
+            require_js: {
+                configPath: 'assets/js/config.js' // RequireJS config path
+            },
+            css: {
+                src: ['assets/build/**/*.css'],  //all your css that needs a hash appended to it
+                dest: 'assets/build' //where the new files will be created
+            } 
     },
-    your_target: {
-      // Target-specific file lists and/or options go here.
-    },
-  },
 });
 ```
 
 ### Options
 
-#### options.separator
-Type: `String`
-Default value: `',  '`
+#### options.clean
+Type: `Boolean`
+Default value: `false`
 
-A string value that is used to do something with whatever.
+A boolean value that is used to determine whether hashed files are also deleted.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.flatten
+Type: `Boolean`
+Default value: `false`
 
-A string value that is used to do something else with whatever else.
+A boolean value that is used to indicator if file paths should be flattened at their `dest` or not.
+
+*Not flattened:
+```shell
+    /assets/build/jquery/dist/789ab3.jquery.js
+```
+
+*Flattened:
+```shell
+    /assets/build/789ab3.jquery.js
+```
 
 ### Usage Examples
 
