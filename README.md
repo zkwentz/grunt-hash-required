@@ -4,7 +4,7 @@
 
 ## Why?
 
-Assuming you are already familiar with [grunt-hash](https://github.com/jgallen23/grunt-hash), this plugin adds functionality on top of, and is intended to be a drop-in replacement of **grunt-hash**. grunt-hash, while a great plugin, I found didn't work well with RequireJS. My css and js assets would have a cache-busting path, but my require configuration would have no idea what those new paths were. 
+Assuming you are already familiar with [grunt-hash](https://github.com/jgallen23/grunt-hash), this plugin adds functionality on top of, and is intended to be a drop-in replacement of *grunt-hash*. grunt-hash, while a great plugin, I found didn't work well with RequireJS. My css and js assets would have a cache-busting path, but my require configuration would have no idea what those new paths were. 
 
 By reading the RequireJS configuration file itself, we can update the paths as we rename them, and we get the added benefit of only hashing the js files we actually use (as negligible an optimization as that is).
 
@@ -94,12 +94,12 @@ Default value: `false`
 
 A boolean value that is used to indicator if file paths should be flattened at their `dest` or not.
 
-*Not flattened:*
+**Not flattened:**
 ```shell
     /assets/build/jquery/dist/jquery.789ab3.js
 ```
 
-*Flattened:*
+**Flattened:**
 ```shell
     /assets/build/jquery.789ab3.js
 ```
@@ -110,19 +110,19 @@ Default value: `false`
 
 A boolean value indicating whether or not the hash should be prepended or appended to the original filename. By default this plugin will append a hash to the filename before the file extension. 
 
-*Prepend:*
+**Prepend:**
 ```shell
     /assets/build/789ab3.jquery.js
 ```
 
-*Append:*
+**Append:**
 ```shell
     /assets/build/jquery.789ab3.js
 ```
 
-**Why would you want to prepend? For me, I needed to because I was uploading my assets to S3 on release. And Amazon suggests that you start each filename with an md5sum to give expected throughput when using Amazon S3 as a CDN. This was a two birds, one stone type situation.**
+*Why would you want to prepend? For me, I needed to because I was uploading my assets to S3 on release. And Amazon suggests that you start each filename with an md5sum to give expected throughput when using Amazon S3 as a CDN. This was a two birds, one stone type situation.*
 
-**See [Improving GET and PUT Throughput](https://aws.amazon.com/articles/1904/)**
+*See [Improving GET and PUT Throughput](https://aws.amazon.com/articles/1904/)*
 
 
 ## Contributing
