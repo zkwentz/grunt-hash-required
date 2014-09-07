@@ -23,7 +23,7 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-hash-required');
 ```
 
-## The "require_cache" task
+## The "hash_require" task
 
 ### Overview
 In your project's Gruntfile, add a section named `hash_require` to the data object passed into `grunt.initConfig()`.
