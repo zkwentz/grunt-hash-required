@@ -31,12 +31,17 @@ module.exports = function(grunt) {
     var options = this.options({
         srcBasePath: "",
         destBasePath: "",
+        baseUrl: "",
         flatten: false,
+        prepend: false,
+        clean: false,
         hashLength: 8
-    }, this.async());
+    });
+    
+    var done = this.async();
     
     
-    function hashFile(src) {
+    function hashFile(src, fileDest) {
         var source = grunt.file.read(src);
         var hash = getHash(source, 'utf8').substr(0, options.hashLength);
         var dirname = path.dirname(src);
@@ -45,9 +50,13 @@ module.exports = function(grunt) {
         var basename = path.basename(src, ext);
         
         // Default destination to the same directory
-        var dest = file.dest || path.dirname(src);
+        var dest = fileDest || path.dirname(src);
         
-        var newFile = hash + '.' + basename + ext;
+        
+        var newFile = basename + '.' + hash + '.' + ext;
+        if (options.prepend) {
+            newFile = hash + '.' + basename + ext;
+        }
         var outputPath = path.join(dest, newFile);
         
         // Determine if the key should be flatten or not. Also normalize the output path
@@ -55,15 +64,35 @@ module.exports = function(grunt) {
         var outKey = path.relative(options.destBasePath, outputPath);
         if (options.flatten) {
           key = path.basename(src);
-          outKey = path.basename(outKey);
+          outKey = path.basename(outKey);       
         }
         
         grunt.file.copy(src, outputPath);
-        grunt.log.writeln('Generated: ' + outputPath);
+        if (options.clean) {
+            console.log(chalk.yellow("Deleting: "+src));
+            grunt.file.delete(src);
+        }
+        grunt.log.writeln('Generated: ' + outKey);
         
         map[unixify(key)] = unixify(outKey);
-        
+
         return outputPath;
+    }
+    
+    function genMap() {
+        if (options.mapping) {
+          var output = '';
+    
+          if (mappingExt === '.php') {
+            output = "<?php return json_decode('" + JSON.stringify(map) + "'); ?>";
+          } else {
+            output = JSON.stringify(map, null, "  ");
+          }
+    
+          grunt.file.write(options.mapping, output);
+          grunt.log.writeln('Generated mapping: ' + options.mapping);
+        }
+        done();
     }
     
     var map = {};
@@ -75,69 +104,63 @@ module.exports = function(grunt) {
       map = grunt.file.readJSON(options.mapping);
     }
     
-    // Get hashed requirejs path
-    if (options.rjsConfigPath) {
-        
-        // Grab the config file
-        if (file.exists(options.rjsConfigPath)) {
-        
-            // First hash the config file itself
-            var hashedConfigPath = hashFile(options.rjsConfigPath,map);
-            config = grunt.file.read(hashedConfigPath);
+    if (this.target === "require_js") {
+        // Get hashed requirejs path
+        if (this.data.configPath) {
             
-            var rjsConfig;    
-            requirejs.tools.useLib(function(require){
-        
-                rjsConfig = require('transform').modifyConfig(config,function(config){  
-                   var relativeBaseUrl = path.join('.',config.baseUrl);         
-                   for (var aPath in config.paths) {
-                     var pathToJSFile = relativeBaseUrl + '/' + aPath + '.js';
-                     if (file.exists(pathToJSFile) && grunt.file.isFile(pathToJSFile)) {
-                         var relativeHashedPath = path.relative(relativeBaseUrl,hashFile(pathToJSFile,map));
-                         config.paths[aPath] = relativeHashedPath;
-                     } else {
-                         console.log(chalk.yellow(pathToJSFile + " not found, skipping."));
-                     }
-                   }           
-                   
-                   return config;
+            // Grab the config file
+            if (file.exists(this.data.configPath)) {
+            
+                // First hash the config file itself
+                var hashedConfigPath = hashFile(this.data.configPath,'assets/build');
+                config = grunt.file.read(hashedConfigPath);
+                
+                var rjsConfig;    
+                requirejs.tools.useLib(function(require){
+            
+                    rjsConfig = require('transform').modifyConfig(config,function(config){  
+                       var relativeBaseUrl = path.join('.',config.baseUrl); 
+                       for (var aPath in config.paths) {
+                         var pathToJSFile = relativeBaseUrl + '/' + config.paths[aPath] + '.js';
+                         if (file.exists(pathToJSFile) && grunt.file.isFile(pathToJSFile)) {
+                             var relativeHashedPath = path.relative(relativeBaseUrl,hashFile(pathToJSFile,relativeBaseUrl));
+                             config.paths[aPath] = relativeHashedPath.replace(/\.js$/,'');
+                         } else {
+                             console.log(chalk.yellow(pathToJSFile + " not found, skipping."));
+                         }
+                       }           
+                       
+                       return config;
+                    });
+                    
+                    grunt.file.write(hashedConfigPath,rjsConfig);
+                    console.log(chalk.green('Updated ' + hashedConfigPath + ' with cache bust paths'));
+                    genMap();
                 });
                 
-                grunt.file.write(hashedConfigPath,rjsConfig);
-                console.log(chalk.green('Updated ' + hashedConfigPath + ' with cache bust paths'));
-            });
+                
+            } else {
+                //log error no config file found at specified path
+                console.log(chalk.yellow('No config file found at: '+this.data.configPath));
+            }
             
-            
-        } else {
-            //log error no config file found at specified path
-            console.log(chalk.yellow('No config file found at: '+options.rjsConfigPath));
         }
-        
+        else 
+        {
+            //log error no config file specified
+            console.log(chalk.red('No config file path specified.'));
+        }
     }
-    else 
+    else
     {
-        //log error no config file specified
-        console.log(chalk.red('No config file path specified.'));
-    }
+        this.files.forEach(function(file) {
+          file.src.forEach(function(src) {
+              hashFile(src, file.dest);
+          });
+          genMap();
+        });
     
-    
-    this.files.forEach(function(file) {
-      file.src.forEach(function(src) {
-          hashFile(src, map);
-      });
-    });
 
-    if (options.mapping) {
-      var output = '';
-
-      if (mappingExt === '.php') {
-        output = "<?php return json_decode('" + JSON.stringify(map) + "'); ?>";
-      } else {
-        output = JSON.stringify(map, null, "  ");
-      }
-
-      grunt.file.write(options.mapping, output);
-      grunt.log.writeln('Generated mapping: ' + options.mapping);
     }
     
 
