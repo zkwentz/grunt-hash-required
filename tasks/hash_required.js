@@ -1,6 +1,6 @@
 /*
- * grunt-require-cache
- * https://github.com/zkwentz/grunt-require-cache
+ * grunt-hash-required
+ * https://github.com/zkwentz/grunt-hash-required
  *
  * Copyright (c) 2014 Zach Wentz
  * Licensed under the MIT license.
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     
   
 
-  grunt.registerMultiTask('require_cache', 'Prepend a unique hash to a file, and update requirejs paths to cache-busted paths.', function() {
+  grunt.registerMultiTask('hash_require', 'Add a unique hash to a file, and update requirejs paths to cache-busted paths.', function() {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
         srcBasePath: "",
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
     var done = this.async();
     
     
-    function hashFile(src, fileDest) {
+    var hashFile = function hashFile(src, fileDest) {
         var source = grunt.file.read(src);
         var hash = getHash(source, 'utf8').substr(0, options.hashLength);
         var dirname = path.dirname(src);
@@ -69,7 +69,6 @@ module.exports = function(grunt) {
         
         grunt.file.copy(src, outputPath);
         if (options.clean) {
-            console.log(chalk.yellow("Deleting: "+src));
             grunt.file.delete(src);
         }
         grunt.log.writeln('Generated: ' + outKey);
@@ -77,9 +76,9 @@ module.exports = function(grunt) {
         map[unixify(key)] = unixify(outKey);
 
         return outputPath;
-    }
+    };
     
-    function genMap() {
+    var genMap = function genMap() {
         if (options.mapping) {
           var output = '';
     
@@ -93,7 +92,7 @@ module.exports = function(grunt) {
           grunt.log.writeln('Generated mapping: ' + options.mapping);
         }
         done();
-    }
+    };
     
     var map = {};
     var mappingExt = path.extname(options.mapping);
@@ -159,8 +158,6 @@ module.exports = function(grunt) {
           });
           genMap();
         });
-    
-
     }
     
 

@@ -1,6 +1,6 @@
 /*
- * grunt-require-cache
- * https://github.com/zkwentz/grunt-require-cache
+ * grunt-hash-required
+ * https://github.com/zkwentz/grunt-hash-required
  *
  * Copyright (c) 2014 Zach Wentz
  * Licensed under the MIT license.
@@ -65,7 +65,7 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'require_cache', 'nodeunit']);
+  grunt.registerTask('test', ['clean', 'hash_require', 'nodeunit']);
 
   // By default, lint and run all tests.
   grunt.registerTask('default', ['jshint', 'test']);
