@@ -1,6 +1,7 @@
 
 var assert = require('assert');
 var fs = require('fs');
+var requirejs   = require('requirejs/bin/r.js');
 
 suite('grunt-hash-required', function() {
 
@@ -18,14 +19,19 @@ suite('grunt-hash-required', function() {
 
   });
   
-  suite('require_js', function() {
+  suite('require js', function() {
      
      test('require_config created', function() {
-         assert.ok(fs.existsSync('out/require_config.e964d44c.js'));
+         assert.ok(fs.existsSync('out/dist/require/require_config.e964d44c.js'));
      });
      
+     test('files created', function() {
+      assert.ok(fs.existsSync('out/dist/require/test1.b93fd451.js'));
+      assert.ok(fs.existsSync('out/dist/require/test2.2870d71a.js'));
+    });
+     
      test('require_config updated', function() {
-         assert.equal(fs.readFileSync('out/require_config.e964d44c.js', 'utf8'), fs.readFileSync('test/fixtures/require_config.js', 'utf8'));
+        assert.equal(fs.readFileSync('out/dist/require/require_config.e964d44c.js','utf8'),fs.readFileSync('test/fixtures/require_config.js.fixture','utf8'));
      });
       
   });
