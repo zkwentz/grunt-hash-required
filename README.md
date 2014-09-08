@@ -40,7 +40,8 @@ grunt.initConfig({
                 clean: true
             },
             require_js: {
-                configPath: 'assets/js/config.js' // RequireJS config path
+                configPath: 'assets/js/config.js', // RequireJS config path
+                dest: '/assets/build'
             },
             css: {
                 src: ['assets/build/**/*.css'],  //all your css that needs a hash appended to it
@@ -60,6 +61,11 @@ Default value: `""`
 
 A string value of the path to your RequireJS configuration file.
 
+#### require_js.dest
+Type: `String`
+Default value: `""`
+
+A string value of the path to where you want grunt-hash-required to move your hashed files.
 
 ### Options
 
