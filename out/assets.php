@@ -1,0 +1,1 @@
+<?php return json_decode('{"examples/require_config.e964d44c.js":"out/dist/php/require_config.e964d44c.e964d44c.js","examples/require_config.js":"out/dist/php/require_config.e964d44c.js","examples/test1.js":"out/dist/php/test1.b93fd451.js","examples/test2.2870d71a.js":"out/dist/php/test2.2870d71a.2870d71a.js","examples/test2.js":"out/dist/php/test2.2870d71a.js"}'); ?>

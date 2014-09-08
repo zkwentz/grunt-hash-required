@@ -5,7 +5,7 @@
  * Copyright (c) 2014 Zach Wentz
  * Licensed under the MIT license.
  */
-
+ 
 'use strict';
 
 var requirejs   = require('requirejs/bin/r.js');
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
         var dest = fileDest || path.dirname(src);
         
         
-        var newFile = basename + '.' + hash + '.' + ext;
+        var newFile = basename + '.' + hash + ext;
         if (options.prepend) {
             newFile = hash + '.' + basename + ext;
         }
@@ -104,14 +104,15 @@ module.exports = function(grunt) {
     }
     
     if (this.target === "require_js") {
+        var data = this.data;
         // Get hashed requirejs path
-        if (this.data.configPath) {
+        if (data.configPath) {
             
             // Grab the config file
-            if (file.exists(this.data.configPath)) {
+            if (file.exists(data.configPath)) {
             
                 // First hash the config file itself
-                var hashedConfigPath = hashFile(this.data.configPath,'assets/build');
+                var hashedConfigPath = hashFile(data.configPath,data.dest);
                 config = grunt.file.read(hashedConfigPath);
                 
                 var rjsConfig;    
@@ -122,7 +123,7 @@ module.exports = function(grunt) {
                        for (var aPath in config.paths) {
                          var pathToJSFile = relativeBaseUrl + '/' + config.paths[aPath] + '.js';
                          if (file.exists(pathToJSFile) && grunt.file.isFile(pathToJSFile)) {
-                             var relativeHashedPath = path.relative(relativeBaseUrl,hashFile(pathToJSFile,relativeBaseUrl));
+                             var relativeHashedPath = path.relative(relativeBaseUrl,hashFile(pathToJSFile,data.dest));
                              config.paths[aPath] = relativeHashedPath.replace(/\.js$/,'');
                          } else {
                              console.log(chalk.yellow(pathToJSFile + " not found, skipping."));
