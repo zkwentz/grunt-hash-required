@@ -1,7 +1,7 @@
 {
   "name": "grunt-hash-required",
-  "description": "Change requirejs paths to cache-busted paths.",
-  "version": "0.1.0",
+  "description": "Add a unique hash to a file, and update requirejs paths to cache-busted paths.",
+  "version": "0.1.1",
   "homepage": "https://github.com/zkwentz/grunt-hash-required",
   "author": {
     "name": "Zach Wentz",
@@ -44,6 +44,13 @@
     "grunt": "~0.4.5"
   },
   "keywords": [
-    "gruntplugin"
-  ]
+    "gruntplugin",
+    "require",
+    "hash",
+    "cache",
+    "modify",
+    "bust",
+    "prepend",
+    "append"
+  ],
 }
